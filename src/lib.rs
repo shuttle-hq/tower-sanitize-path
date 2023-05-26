@@ -40,6 +40,11 @@ impl<S> SanitizePath<S> {
     pub fn sanitize_paths(inner: S) -> Self {
         Self { inner }
     }
+
+    /// Access the wrapped service.
+    pub fn inner(&self) -> &S {
+        &self.inner
+    }
 }
 
 impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for SanitizePath<S>
