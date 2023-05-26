@@ -6,7 +6,7 @@ will become `/passwd` before being passed to inner services.
 
 # Example
 
-```
+``` rust
 use http::{Request, Response, StatusCode};
 use hyper::Body;
 use std::{iter::once, convert::Infallible};
