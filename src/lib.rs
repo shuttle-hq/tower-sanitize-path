@@ -21,7 +21,7 @@ impl<S> Layer<S> for SanitizePathLayer {
     type Service = SanitizePath<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        SanitizePath { inner }
+        SanitizePath::sanitize_paths(inner)
     }
 }
 
@@ -31,6 +31,15 @@ impl<S> Layer<S> for SanitizePathLayer {
 #[derive(Clone, Copy, Debug)]
 pub struct SanitizePath<S> {
     inner: S,
+}
+
+impl<S> SanitizePath<S> {
+    /// Sanitize all paths for the given service.
+    ///
+    /// This will make all paths on the URL safe for the service to consume.
+    pub fn sanitize_paths(inner: S) -> Self {
+        Self { inner }
+    }
 }
 
 impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for SanitizePath<S>
