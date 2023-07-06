@@ -71,9 +71,10 @@ fn sanitize_path(uri: &mut Uri) {
     let path = uri.path();
     let path_decoded = decode(path);
 
-    // Check if the path contains a trailing slash.
+    // Check if the path contains a trailing slash and that it is not the only
+    // character.
     let trailing_slash = if let Some(char) = path_decoded.chars().last() {
-        char == '/'
+        char == '/' && path_decoded.len() > 1
     } else {
         false
     };
@@ -208,6 +209,14 @@ mod tests {
     #[test]
     fn keep_trailing_slash() {
         let mut uri = "/path/".parse().unwrap();
+        sanitize_path(&mut uri);
+
+        assert_eq!(uri, "/path/");
+    }
+
+    #[test]
+    fn keep_only_one_trailing_slash() {
+        let mut uri = "/path//".parse().unwrap();
         sanitize_path(&mut uri);
 
         assert_eq!(uri, "/path/");
