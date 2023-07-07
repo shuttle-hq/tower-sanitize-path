@@ -2,4 +2,4 @@
 
 ### Breaking
 
-- keep trailing slash in paths, they were previously normalized away ([#6])
+- keep trailing slash in paths, they were previously normalized away ([#6](https://github.com/shuttle-hq/tower-sanitize-path/pull/6))
