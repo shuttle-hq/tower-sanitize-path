@@ -73,11 +73,12 @@ fn sanitize_path(uri: &mut Uri) {
 
     // Check if the path contains a trailing slash and that it is not the only
     // character.
-    let trailing_slash = if let Some(char) = path_decoded.chars().last() {
-        char == '/' && path_decoded.len() > 1
-    } else {
-        false
-    };
+    let trailing_slash = path_decoded.len() > 1
+        && path_decoded
+            .chars()
+            .last()
+            .filter(|char| *char == '/')
+            .is_some();
 
     let path_buf = PathBuf::from_str(&path_decoded).expect("infallible");
 
