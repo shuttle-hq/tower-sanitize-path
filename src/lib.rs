@@ -70,14 +70,30 @@ where
 fn sanitize_path(uri: &mut Uri) {
     let path = uri.path();
     let path_decoded = decode(path);
+
+    // Check if the path contains a trailing slash and that it is not the only
+    // character.
+    let trailing_slash = path_decoded.len() > 1
+        && path_decoded
+            .chars()
+            .last()
+            .filter(|char| *char == '/')
+            .is_some();
+
     let path_buf = PathBuf::from_str(&path_decoded).expect("infallible");
 
-    let new_path = path_buf
+    let mut new_path = path_buf
         .components()
         .filter(|c| matches!(c, Component::RootDir | Component::Normal(_)))
         .collect::<PathBuf>()
         .display()
         .to_string();
+
+    // Path::components above will normalize away the trailing slash if there is one,
+    // so we add it back.
+    if trailing_slash {
+        new_path += "/";
+    }
 
     if path == new_path {
         return;
@@ -189,5 +205,21 @@ mod tests {
         sanitize_path(&mut uri);
 
         assert_eq!(uri, "/path");
+    }
+
+    #[test]
+    fn keep_trailing_slash() {
+        let mut uri = "/path/".parse().unwrap();
+        sanitize_path(&mut uri);
+
+        assert_eq!(uri, "/path/");
+    }
+
+    #[test]
+    fn keep_only_one_trailing_slash() {
+        let mut uri = "/path//".parse().unwrap();
+        sanitize_path(&mut uri);
+
+        assert_eq!(uri, "/path/");
     }
 }
